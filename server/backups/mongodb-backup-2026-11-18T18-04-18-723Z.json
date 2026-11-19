@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "exportedAt": "2026-11-18T18:04:18.721Z",
+    "sourceDatabase": "MongoDB",
+    "counts": {
+      "users": 3,
+      "candidateProfiles": 0,
+      "companies": 1,
+      "jobs": 0,
+      "applications": 0,
+      "plans": 1,
+      "subscriptions": 0,
+      "payments": 0
+    }
+  },
+  "users": [
+    {
+      "_id": "673c10000000000000000001",
+      "email": "admin@truehire.internal",
+      "role": "admin",
+      "isActive": true
+    },
+    {
+      "_id": "673c10000000000000000002",
+      "email": "recruiter@techcorp.com",
+      "role": "recruiter",
+      "isActive": true
+    },
+    {
+      "_id": "673c10000000000000000003",
+      "email": "candidate@university.edu",
+      "role": "candidate",
+      "isActive": true
+    }
+  ],
+  "candidateProfiles": [],
+  "companies": [
+    {
+      "_id": "673c20000000000000000001",
+      "name": "TechCorp Verified",
+      "verificationStatus": "valid"
+    }
+  ],
+  "jobs": [],
+  "applications": [],
+  "plans": [
+    {
+      "_id": "673c30000000000000000001",
+      "name": "Starter",
+      "price": 499,
+      "billingType": "per_job"
+    }
+  ],
+  "subscriptions": [],
+  "payments": []
+}

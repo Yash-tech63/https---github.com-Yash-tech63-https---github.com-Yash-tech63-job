@@ -1,0 +1,77 @@
+name: TrueHire CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  validate-environment:
+    name: Validate Configuration & Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Server .env.example
+        run: |
+          echo "Checking server configuration requirements..."
+          test -f server/.env.example || exit 1
+          grep -q "PORT=" server/.env.example || exit 1
+          grep -q "MONGODB_URI=" server/.env.example || exit 1
+          grep -q "DATABASE_URL=" server/.env.example || exit 1
+          grep -q "JWT_SECRET=" server/.env.example || exit 1
+          grep -q "SMTP_HOST=" server/.env.example || exit 1
+          grep -q "RAZORPAY_KEY_ID=" server/.env.example || exit 1
+          echo "All required environment variable definitions present."
+
+  build-frontend:
+    name: Build Client (Vite + React)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install Client Dependencies
+        run: npm --prefix client ci
+
+      - name: Build Client Production Bundle
+        run: npm --prefix client run build
+
+  test-backend:
+    name: Test & Lint Backend
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install Server Dependencies
+        run: npm --prefix server ci
+
+      - name: Validate Server Architecture & Syntax
+        run: |
+          node -c server/src/server.js
+          node -c server/src/utils/logger.js
+          node -c server/src/scripts/migrate-mongo-to-postgres.js
+          echo "Server syntax and compilation checks passed."
